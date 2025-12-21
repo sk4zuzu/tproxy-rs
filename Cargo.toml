@@ -1,0 +1,33 @@
+[package]
+name = "tproxy"
+version = "0.1.0"
+authors = ["sk4zuzu <sk4zuzu@gmail.com>"]
+edition = "2024"
+
+[lib]
+name = "tproxy"
+path = "./src/lib.rs"
+
+[[bin]]
+name = "tproxy"
+path = "./src/bin.rs"
+
+[dev-dependencies]
+futures = "*"
+indoc = "*"
+minijinja = "*"
+serial_test = "*"
+
+[dependencies]
+env_logger = "*"
+libc = "*"
+log = "*"
+nix = { version = "*", features = ["fs", "sched", "signal"] }
+regex = "*"
+serde = "*"
+serde_json = "*"
+thiserror = "*"
+tokio = { version = "*", features = ["full"] }
+tokio-stream = "*"
+tokio-util = { version = "*", features = ["rt"] }
+which = { version = "*", features = ["regex"] }
