@@ -133,11 +133,11 @@ static JINJA: LazyLock<minijinja::Environment> = LazyLock::new(|| {
     env.add_template("BASH_ASSERT_SERVICE_PORTS", jinja! {r#"
         set -e
 
-        {% for service_port in assert_open %}
+        {% for service_port in assert_open | d([]) %}
         [[ -n "$(ss -N {{ prefix }}_{{ brdev }} -HQnt4 state listening src {{ service_addr }} sport {{ service_port }})" ]]
         {% endfor %}
 
-        {% for service_port in assert_closed %}
+        {% for service_port in assert_closed | d([]) %}
         [[ -z "$(ss -N {{ prefix }}_{{ brdev }} -HQnt4 state listening src {{ service_addr }} sport {{ service_port }})" ]]
         {% endfor %}
     "#}).unwrap();
