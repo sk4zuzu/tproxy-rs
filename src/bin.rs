@@ -41,6 +41,8 @@ fn main() -> Result<()> {
 
             for brdev in config.bridges {
                 Daemon::new(format!("{}_{}", tproxy::TPROXY_PREFIX, brdev)).run(move || {
+                    // the bridge and netns here are pre-configured externally
+
                     let netns = format!("{}_{}", tproxy::TPROXY_PREFIX, brdev);
 
                     tproxy::enter_named_netns(netns).map_err(tproxy::log_err)?;

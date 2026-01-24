@@ -111,6 +111,8 @@ impl Daemon {
                     return Ok(())
                 },
                 Operation::Restart | Operation::Start => {
+                    // posix_spawn() is used here instead of fork() since modification
+                    // of the ARGV array requires unreasonable effort in Rust
                     Command::new(env::current_exe()?)
                         .arg0(self.cmd.clone())
                         .spawn()?;
@@ -134,14 +136,14 @@ impl Daemon {
     fn detach(&self) -> Result<()> {
         unsafe { if libc::setsid() == -1 { return Err(Errno::last().into()) } }
 
-        // => STDIN
+        // redirect STDIN
         let dev_null = OpenOptions::new()
             .read(true)
             .write(true)
             .open("/dev/null")?;
         unistd::dup2_stdin(&dev_null)?;
 
-        // => STDOUT, => STDERR
+        // redirect STDOUT and STDERR
         let log_file = OpenOptions::new()
             .append(true)
             .create(true)

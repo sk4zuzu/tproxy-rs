@@ -37,6 +37,10 @@ pub struct Config {
 
 impl Config {
     pub fn load_peer_config_unparsed(maybe_brdev: Option<IfNam>) -> Result<String> {
+        // note that nft is executed here directly without nsenter, instead the same tproxy binary
+        // is re-executed with the "config" command-line argument (this produces similar result
+        // without extra dependency at the cost of somewhat increased complexity)
+
         if let Operation::Config(_) = Operation::get()? { tproxy::enter_default_netns()? }
 
         let output = if tproxy::in_default_netns()? {

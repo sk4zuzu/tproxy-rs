@@ -55,6 +55,7 @@ where
                     loop {
                         select! {
                             _ = ctoken2.cancelled() => {
+                                // gracefully shutdown both streams to prevent file descriptor leaks
                                 incoming.shutdown().await.ok();
                                 outgoing.shutdown().await.ok();
                                 return Ok(())
@@ -86,6 +87,7 @@ where
                 }
 
                 if incoming_done || outgoing_done {
+                    // gracefully shutdown both streams to prevent file descriptor leaks
                     incoming.shutdown().await.ok();
                     outgoing.shutdown().await.ok();
                     break Ok(())

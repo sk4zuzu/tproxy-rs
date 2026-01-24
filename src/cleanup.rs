@@ -30,6 +30,9 @@ pub struct Cleanup;
 
 impl Cleanup {
     pub fn cancel_spurious_proxies(maybe_config: Option<&Config>) -> Result<()> {
+        // remove proxies/peers that look like leftovers from previous/other runs
+        // (for bridges that are completely missing from the running config)
+
         let config = match maybe_config {
             Some(v) => v, None => &Config::load_peer_config(None)?,
         };

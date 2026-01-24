@@ -27,6 +27,8 @@ pub struct IfNam { bytes: [u8; libc::IFNAMSIZ] }
 
 impl Debug for IfNam {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        // the resulting string has to be truncated so there are no
+        // 0-valued bytes as it may cause problems in various places
         let n = match self.bytes.into_iter().position(|b| b == 0) {
             Some(n) => n, None => libc::IFNAMSIZ,
         };
@@ -36,6 +38,8 @@ impl Debug for IfNam {
 
 impl Display for IfNam {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        // the resulting string has to be truncated so there are no
+        // 0-valued bytes as it may cause problems in various places
         let n = match self.bytes.into_iter().position(|b| b == 0) {
             Some(n) => n, None => libc::IFNAMSIZ,
         };
@@ -45,6 +49,7 @@ impl Display for IfNam {
 
 impl From<&[u8]> for IfNam {
     fn from(src: &[u8]) -> Self {
+        // the interface's name length must be capped at the value of IFNAMSIZ
         let n = cmp::min(src.len(), libc::IFNAMSIZ - 1);
         let mut dst = Self { bytes: [0; libc::IFNAMSIZ] };
         dst.bytes[..n].copy_from_slice(&src[..n]);
@@ -120,7 +125,7 @@ pub fn enter_named_netns(name: String) -> Result<()> {
     let named_netns = OpenOptions::new()
         .read(true)
         .write(false)
-        .open(format!("/var/run/netns/{}", name))?;
+        .open(format!("/var/run/netns/{}", name))?; // this is what iproute2 does
 
     sched::setns(named_netns, sched::CloneFlags::CLONE_NEWNET)?;
 
