@@ -35,3 +35,5 @@ p purge:
 
 s static:
 	cd $(SELF) && nix build
+	cd $(SELF) && install -m u=rwx,go=rx ./result/bin/tproxy ./tproxy
+	cd $(SELF) && nix develop --command strip --strip-unneeded ./tproxy

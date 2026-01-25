@@ -30,6 +30,7 @@
         in {
           default = pkgs.mkShell {
             buildInputs = with pkgs; [
+              binutils
               cargo
             ];
           };

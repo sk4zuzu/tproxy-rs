@@ -1,0 +1,23 @@
+---
+name: release
+
+on:
+  push:
+    tags: ["v*.*.*"]
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: cachix/install-nix-action@v31
+
+      - env: { GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}" }
+        run: |
+          nix build
+          install -m u=rwx,go=rx ./result/bin/tproxy ./tproxy
+          nix develop --command strip --strip-unneeded ./tproxy
+          gh release create "$GITHUB_REF_NAME" --generate-notes ./tproxy
