@@ -65,7 +65,11 @@ impl Config {
             }
         };
 
-        Ok(String::from_utf8(output.stdout)?)
+        if !output.status.success() {
+            Err(tproxy::TProxyError::Exited(output.status.code()))
+        } else {
+            Ok(String::from_utf8(output.stdout)?)
+        }
     }
 
     pub fn load_peer_config(maybe_brdev: Option<IfNam>) -> Result<Config> {

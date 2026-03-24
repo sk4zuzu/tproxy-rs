@@ -9,6 +9,9 @@ pub fn log_err(e: TProxyError) -> TProxyError { log::error!("{}", e); e }
 
 #[derive(Debug, thiserror::Error)]
 pub enum TProxyError {
+    #[error("Exited with error")]
+    Exited(Option<i32>),
+
     #[error("Fatal")]
     Fatal,
 

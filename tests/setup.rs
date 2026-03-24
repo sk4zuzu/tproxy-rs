@@ -208,7 +208,7 @@ pub async fn run(bin: &[&str], tpl: &str, ctx: &Value) -> Result<()> {
 
     let tpl = JINJA.get_template(tpl).unwrap().render(ctx).unwrap();
 
-    let out = tokio::process::Command::new(program)
+    let output = tokio::process::Command::new(program)
         .args(args)
         .stdin({
             use std::io::Write;
@@ -222,10 +222,13 @@ pub async fn run(bin: &[&str], tpl: &str, ctx: &Value) -> Result<()> {
         .output()
         .await?;
 
-    println!("{}", String::from_utf8_lossy(&out.stderr));
-    println!("{}", String::from_utf8_lossy(&out.stdout));
-
-    Ok(())
+    if !output.status.success() {
+        Err(tproxy::TProxyError::Exited(output.status.code()))
+    } else {
+        println!("{}", String::from_utf8_lossy(&output.stderr));
+        println!("{}", String::from_utf8_lossy(&output.stdout));
+        Ok(())
+    }
 }
 
 pub async fn tcp_echo(bind_addr: SocketAddr) -> Result<()> {
