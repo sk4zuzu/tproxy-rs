@@ -246,7 +246,7 @@ pub fn setup() {
         env_logger::Env::default().filter_or(env_logger::DEFAULT_FILTER_ENV, "debug")).ok();
 
     which::which("bash").unwrap();
-    which::which("doas").unwrap();
+    which::which("sudo").unwrap();
     which::which("ip").unwrap();
     which::which("nft").unwrap();
     which::which("ss").unwrap();

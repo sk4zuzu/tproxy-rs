@@ -55,27 +55,27 @@ async fn test_one_bridge_one_service_modify_service_port() -> Result<()> {
     };
 
     match async {
-        run(&["doas", "bash", "-xs"], "BASH_ENABLE_TPROXY", &ctx1).await?;
-        run(&["doas", "nft", "-ef-"], "NFT_ENABLE_EP_MAP", &ctx1).await?;
+        run(&["sudo", "bash", "-xs"], "BASH_ENABLE_TPROXY", &ctx1).await?;
+        run(&["sudo", "nft", "-ef-"], "NFT_ENABLE_EP_MAP", &ctx1).await?;
 
-        run(&["doas", "bash", "-xs"], "BASH_START_TPROXY", &ctx! {}).await?;
+        run(&["sudo", "bash", "-xs"], "BASH_START_TPROXY", &ctx! {}).await?;
 
-        run(&["doas", "bash", "-xs"], "BASH_ASSERT_SERVICE_PORTS", &ctx1).await?;
+        run(&["sudo", "bash", "-xs"], "BASH_ASSERT_SERVICE_PORTS", &ctx1).await?;
 
-        run(&["doas", "bash", "-xs"], "BASH_ENABLE_TPROXY", &ctx2).await?;
-        run(&["doas", "nft", "-ef-"], "NFT_ENABLE_EP_MAP", &ctx2).await?;
+        run(&["sudo", "bash", "-xs"], "BASH_ENABLE_TPROXY", &ctx2).await?;
+        run(&["sudo", "nft", "-ef-"], "NFT_ENABLE_EP_MAP", &ctx2).await?;
 
-        run(&["doas", "bash", "-xs"], "BASH_RELOAD_TPROXY", &ctx! {}).await?;
+        run(&["sudo", "bash", "-xs"], "BASH_RELOAD_TPROXY", &ctx! {}).await?;
 
-        run(&["doas", "bash", "-xs"], "BASH_ASSERT_SERVICE_PORTS", &ctx2).await?;
+        run(&["sudo", "bash", "-xs"], "BASH_ASSERT_SERVICE_PORTS", &ctx2).await?;
 
         Ok(())
     }.await {
         r => {
-            run(&["doas", "bash", "-xs"], "BASH_STOP_TPROXY", &ctx! {}).await.ok();
+            run(&["sudo", "bash", "-xs"], "BASH_STOP_TPROXY", &ctx! {}).await.ok();
 
-            run(&["doas", "nft", "-ef-"], "NFT_DISABLE_EP_MAP", &ctx0).await.ok();
-            run(&["doas", "bash", "-xs"], "BASH_DISABLE_TPROXY", &ctx0).await.ok();
+            run(&["sudo", "nft", "-ef-"], "NFT_DISABLE_EP_MAP", &ctx0).await.ok();
+            run(&["sudo", "bash", "-xs"], "BASH_DISABLE_TPROXY", &ctx0).await.ok();
 
             r.map_err(tproxy::log_err)
         }

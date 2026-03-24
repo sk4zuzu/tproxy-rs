@@ -17,7 +17,7 @@ To install **tproxy-rs** in an OpenNebula environment copy the statically-linked
 sudo -u oneadmin onehost sync -f
 ```
 
-To run integration tests (requires root privileges via `doas`):
+To run integration tests (requires root privileges via `sudo`):
 ```shell
 make test
 ```

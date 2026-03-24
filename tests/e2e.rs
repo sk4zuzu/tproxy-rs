@@ -60,17 +60,17 @@ async fn test_two_bridges_two_services_e2e() -> Result<()> {
     };
 
     match async {
-        run(&["doas", "bash", "-xs"], "BASH_ENABLE_TPROXY", &ctx0).await?;
-        run(&["doas", "bash", "-xs"], "BASH_ENABLE_GUEST", &ctx0).await?;
-        run(&["doas", "nft", "-ef-"], "NFT_ENABLE_ARP_REDIR", &ctx0).await?;
-        run(&["doas", "nft", "-ef-"], "NFT_ENABLE_EP_MAP", &ctx0).await?;
+        run(&["sudo", "bash", "-xs"], "BASH_ENABLE_TPROXY", &ctx0).await?;
+        run(&["sudo", "bash", "-xs"], "BASH_ENABLE_GUEST", &ctx0).await?;
+        run(&["sudo", "nft", "-ef-"], "NFT_ENABLE_ARP_REDIR", &ctx0).await?;
+        run(&["sudo", "nft", "-ef-"], "NFT_ENABLE_EP_MAP", &ctx0).await?;
 
-        run(&["doas", "bash", "-xs"], "BASH_ENABLE_TPROXY", &ctx1).await?;
-        run(&["doas", "bash", "-xs"], "BASH_ENABLE_GUEST", &ctx1).await?;
-        run(&["doas", "nft", "-ef-"], "NFT_ENABLE_ARP_REDIR", &ctx1).await?;
-        run(&["doas", "nft", "-ef-"], "NFT_ENABLE_EP_MAP", &ctx1).await?;
+        run(&["sudo", "bash", "-xs"], "BASH_ENABLE_TPROXY", &ctx1).await?;
+        run(&["sudo", "bash", "-xs"], "BASH_ENABLE_GUEST", &ctx1).await?;
+        run(&["sudo", "nft", "-ef-"], "NFT_ENABLE_ARP_REDIR", &ctx1).await?;
+        run(&["sudo", "nft", "-ef-"], "NFT_ENABLE_EP_MAP", &ctx1).await?;
 
-        run(&["doas", "bash", "-xs"], "BASH_START_TPROXY", &ctx! {}).await?;
+        run(&["sudo", "bash", "-xs"], "BASH_START_TPROXY", &ctx! {}).await?;
 
         loop {
             tokio::select! {
@@ -104,7 +104,7 @@ async fn test_two_bridges_two_services_e2e() -> Result<()> {
                                                  .unwrap()
                                                  .to_string();
                             run(
-                                &["doas", "ip", "netns", "exec", &netns, "bash", "-xs"],
+                                &["sudo", "ip", "netns", "exec", &netns, "bash", "-xs"],
                                 "BASH_PING_SERVICE",
                                 &ctx! {
                                     service_addr => service_addr,
@@ -126,7 +126,7 @@ async fn test_two_bridges_two_services_e2e() -> Result<()> {
                                                  .unwrap()
                                                  .to_string();
                             run(
-                                &["doas", "ip", "netns", "exec", &netns, "bash", "-xs"],
+                                &["sudo", "ip", "netns", "exec", &netns, "bash", "-xs"],
                                 "BASH_PING_SERVICE",
                                 &ctx! {
                                     service_addr => service_addr,
@@ -145,17 +145,17 @@ async fn test_two_bridges_two_services_e2e() -> Result<()> {
         }
     }.await {
         r => {
-            run(&["doas", "bash", "-xs"], "BASH_STOP_TPROXY", &ctx! {}).await.ok();
+            run(&["sudo", "bash", "-xs"], "BASH_STOP_TPROXY", &ctx! {}).await.ok();
 
-            run(&["doas", "nft", "-ef-"], "NFT_DISABLE_EP_MAP", &ctx0).await.ok();
-            run(&["doas", "nft", "-ef-"], "NFT_DISABLE_ARP_REDIR", &ctx0).await.ok();
-            run(&["doas", "bash", "-xs"], "BASH_DISABLE_GUEST", &ctx0).await.ok();
-            run(&["doas", "bash", "-xs"], "BASH_DISABLE_TPROXY", &ctx0).await.ok();
+            run(&["sudo", "nft", "-ef-"], "NFT_DISABLE_EP_MAP", &ctx0).await.ok();
+            run(&["sudo", "nft", "-ef-"], "NFT_DISABLE_ARP_REDIR", &ctx0).await.ok();
+            run(&["sudo", "bash", "-xs"], "BASH_DISABLE_GUEST", &ctx0).await.ok();
+            run(&["sudo", "bash", "-xs"], "BASH_DISABLE_TPROXY", &ctx0).await.ok();
 
-            run(&["doas", "nft", "-ef-"], "NFT_DISABLE_EP_MAP", &ctx1).await.ok();
-            run(&["doas", "nft", "-ef-"], "NFT_DISABLE_ARP_REDIR", &ctx1).await.ok();
-            run(&["doas", "bash", "-xs"], "BASH_DISABLE_GUEST", &ctx1).await.ok();
-            run(&["doas", "bash", "-xs"], "BASH_DISABLE_TPROXY", &ctx1).await.ok();
+            run(&["sudo", "nft", "-ef-"], "NFT_DISABLE_EP_MAP", &ctx1).await.ok();
+            run(&["sudo", "nft", "-ef-"], "NFT_DISABLE_ARP_REDIR", &ctx1).await.ok();
+            run(&["sudo", "bash", "-xs"], "BASH_DISABLE_GUEST", &ctx1).await.ok();
+            run(&["sudo", "bash", "-xs"], "BASH_DISABLE_TPROXY", &ctx1).await.ok();
 
             r.map_err(tproxy::log_err)
         }

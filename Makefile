@@ -23,10 +23,10 @@ b build:
 	cd $(SELF)/ && cargo build
 
 c config: build
-	cd $(SELF)/ && doas ./target/debug/$(PACKAGE_BIN) config
+	cd $(SELF)/ && sudo ./target/debug/$(PACKAGE_BIN) config
 
 d debug: build
-	cd $(SELF)/ && doas ./target/debug/$(PACKAGE_BIN) start
+	cd $(SELF)/ && sudo ./target/debug/$(PACKAGE_BIN) start
 
 p purge:
 	rm -rf $(SELF)/target/
