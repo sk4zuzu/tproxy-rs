@@ -70,37 +70,32 @@ static JINJA: LazyLock<minijinja::Environment> = LazyLock::new(|| {
     "#}).unwrap();
 
     env.add_template("NFT_ENABLE_ARP_REDIR", jinja! {r#"
-        table bridge {{ prefix }} {
-            chain ch_{{ brdev }} {
-                type filter hook forward priority filter; policy accept;
-            };
-        };
+        add table bridge {{ prefix }};
+
+        add chain bridge {{ prefix }} ch_{{ brdev }} \
+            { type filter hook forward priority filter; policy accept; };
 
         flush chain bridge {{ prefix }} ch_{{ brdev }};
 
-        table bridge {{ prefix }} {
-            chain ch_{{ brdev }} {
-                meta ibrname "{{ brdev }}" \
-                oifname != "{{ brdev }}b" \
-                arp operation request \
-                arp daddr ip {{ service_addr }} \
-                drop;
-            };
-        };
+        add rule bridge {{ prefix }} ch_{{ brdev }} \
+            meta ibrname "{{ brdev }}" \
+            oifname != "{{ brdev }}b" \
+            arp operation request \
+            arp daddr ip {{ service_addr }} \
+            drop;
     "#}).unwrap();
 
     env.add_template("NFT_ENABLE_EP_MAP", jinja! {r#"
-        table ip {{ prefix }} {
-            map ep_{{ brdev }} {
-                type inet_service : ipv4_addr . inet_service;
-            };
-        };
+        add table ip {{ prefix }};
+
+        add map ip {{ prefix }} ep_{{ brdev }} \
+            { type inet_service : ipv4_addr . inet_service; };
 
         flush map ip {{ prefix }} ep_{{ brdev }};
 
         {% for ep in endpoints %}
         add element ip {{ prefix }} ep_{{ brdev }} \
-        { {{ ep.service_port }} : {{ ep.remote_addr }} . {{ ep.remote_port }} };
+            { {{ ep.service_port }} : {{ ep.remote_addr }} . {{ ep.remote_port }} };
         {% endfor %}
     "#}).unwrap();
 
@@ -147,21 +142,19 @@ static JINJA: LazyLock<minijinja::Environment> = LazyLock::new(|| {
     "#}).unwrap();
 
     env.add_template("NFT_DISABLE_EP_MAP", jinja! {r#"
-        table ip {{ prefix }} {
-            map ep_{{ brdev }} {
-                type inet_service : ipv4_addr . inet_service;
-            };
-        };
+        add table ip {{ prefix }};
+
+        add map ip {{ prefix }} ep_{{ brdev }} \
+            { type inet_service : ipv4_addr . inet_service; };
 
         delete map ip {{ prefix }} ep_{{ brdev }};
     "#}).unwrap();
 
     env.add_template("NFT_DISABLE_ARP_REDIR", jinja! {r#"
-        table bridge {{ prefix }} {
-            chain ch_{{ brdev }} {
-                type filter hook forward priority filter; policy accept;
-            };
-        };
+        add table bridge {{ prefix }};
+
+        add chain bridge {{ prefix }} ch_{{ brdev }} \
+            { type filter hook forward priority filter; policy accept; };
 
         delete chain bridge {{ prefix }} ch_{{ brdev }};
     "#}).unwrap();
