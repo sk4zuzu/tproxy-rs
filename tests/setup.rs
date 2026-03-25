@@ -222,11 +222,12 @@ pub async fn run(bin: &[&str], tpl: &str, ctx: &Value) -> Result<()> {
         .output()
         .await?;
 
+    println!("{}", String::from_utf8_lossy(&output.stderr));
+    println!("{}", String::from_utf8_lossy(&output.stdout));
+
     if !output.status.success() {
         Err(tproxy::TProxyError::Exited(output.status.code()))
     } else {
-        println!("{}", String::from_utf8_lossy(&output.stderr));
-        println!("{}", String::from_utf8_lossy(&output.stdout));
         Ok(())
     }
 }
